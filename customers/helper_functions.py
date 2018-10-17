@@ -1,7 +1,7 @@
 
 from .validationMassages import validation_message
 from django.db import transaction
-from .models import Customer
+from .models import Customer, Address, ContactPerson
 
 def validate_customer(params):
     customer_name = params.get("customer_name")
@@ -11,15 +11,6 @@ def validate_customer(params):
     created = params.get("created") 
     modified = params.get("modified")
 
-    # address = params.get("address")
-    # state = params.get("state")
-    # city = params.get("city")
-    # pincode = params.get("pincode")
-
-    # name = 
-    # email = 
-    # mobile_number1 = 
-    # mobile_number2 = 
 
     if not customer_name:
         return False, "customer name is mandatory", None
@@ -27,12 +18,6 @@ def validate_customer(params):
         return False, "pan number is mandatory", None
     if not gstn_number:
         return False, "gstn number is mandatory", None
-    # if not address:
-    #     return False, "address is mandatory", None
-    # if not name:
-    #     return False, "name is mandatory", None
-    # if not mobile_number1:
-    #     return False, "mobile_number1 is mandatory", None
 
     kwargs = {
         "customer_name": customer_name,
@@ -62,3 +47,55 @@ def create_customer(data):
         print (e)
         return None, False
 
+def validate_customer_address(data, customer_id):
+    # print("data in validate_customer_address", data)
+    if not data.get("address"):
+        return False, "customer address is mandatory", None
+    
+    kwargs = {
+        "customer" : Customer.objects.get(id = customer_id),
+        "address" : data.get("address"),
+        "state" : data.get("state"),
+        "city" : data.get("city"),
+        "pincode" : data.get("pincode")
+    }
+    print("dictionary object: ", kwargs)
+    return True, validation_message["105"], kwargs
+
+def create_customer_address(data):
+    try:
+        with transaction.atomic():
+            customer_address = Address.objects.create(**data)
+            return True
+    except Exception as e:
+        print(e)
+        return False
+
+def validate_customer_contactPerson(data, customer_id):
+    if not data.get("name") and not data.get("mobile_number1"):
+        return False, "customer name and mob num is compulsary", None
+    kwargs = {
+        "customer": Customer.objects.get(id = customer_id),
+        "name": data.get("name") ,
+        "email": data.get("email"), 
+        "mobile_number1": data.get("mobile_number1"), 
+        "mobile_number2": data.get("mobile_number2") 
+    }
+    return True, "customer contact person created successfully", kwargs
+
+def create_customer_contactPerson(data):
+    try:
+        with transaction.atomic():
+            customer_contactPerson = ContactPerson.objects.create(**data)
+            return True
+    except Exception as e:
+        print(e)
+        return False
+def create_object(model, data):
+    try:
+        with transaction.atomic():
+            obj = model.objects.create(**data)
+            return obj.id, True
+    except Exception as e:
+        print(e)
+        return False

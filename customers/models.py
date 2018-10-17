@@ -21,7 +21,7 @@ class Address(models.Model):
     is_active = models.BooleanField(default = True)
     
     def __str__(self):
-        return self.customer.customer_name, self.id
+        return self.customer.customer_name
 
 class ContactPerson(models.Model):
     customer = models.ForeignKey(Customer, on_delete = models.SET_NULL, null = True)
@@ -32,5 +32,5 @@ class ContactPerson(models.Model):
     is_active = models.BooleanField(default = True)
 
     def __str__(self):
-        return self.name, self.customer.customer_name
+        return self.name
 
