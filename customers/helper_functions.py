@@ -4,7 +4,7 @@ from django.db import transaction
 from .models import Customer, Address, ContactPerson
 
 def validate_customer(params):
-    if not params.get("customer_name") and not params.get("pan_number") and params.get("gstn_number"):
+    if not (params.get("customer_name") and params.get("pan_number") and params.get("gstn_number")):
         return False, "customer name, pan number, gstn number is mandatory", None
 
     kwargs = {
@@ -34,7 +34,7 @@ def validate_customer_address(data, customer_id):
 
 
 def validate_customer_contactPerson(data, customer_id):
-    if not data.get("name") and not data.get("mobile_number1"):
+    if not (data.get("name") and data.get("mobile_number1")):
         return False, "customer name and mob num is compulsary", None
     kwargs = {
         "customer": Customer.objects.get(id = customer_id),

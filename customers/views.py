@@ -33,6 +33,8 @@ def create_new_customer(request):
             if not status:
                 return JsonResponse({"validation": validation, "status": status})
             status, validation, data = validate_customer_contactPerson(params,customer_id)
+            if not status:
+                return JsonResponse({"validation": validation, "status": status})
             contactPerson_id, status = create_object(ContactPerson, data)
             if not status:
                 return JsonResponse({"validation": validation, "status": status})
